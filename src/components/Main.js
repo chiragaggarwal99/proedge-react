@@ -48,16 +48,16 @@ class Main extends Component {
             bitString += fiveDigitBits; // combined into single string
         }
 
-        var n = 6; // number of bits used to create a single character of compressed string
+        var n = 10; // number of bits used to create a single character of compressed string
         for(let ch=0;ch<bitString.length;ch+=n){
             let nDigitBits = bitString.substr(ch,n); // n bit characters
             if(nDigitBits.length!==n){
                 // when ndigitbits is less than number of bits required, for example to convert 011 to 011000 (when n=6)
                 let temp = parseInt(nDigitBits,2)<<n-nDigitBits.length;
-                nDigitBits = ("0000000" + temp.toString(2)).substr(-6);
+                nDigitBits = ("00000000000" + temp.toString(2)).substr(-10);
             }
             let code = parseInt(nDigitBits,2); // binary to decimal
-            let char = String.fromCharCode((code+58).toString(10)); // decimal+58 to char to avoid invalid characters
+            let char = String.fromCharCode((code+33).toString(10)); // decimal+58 to char to avoid invalid characters
             compressedInput += char; 
         }
         this.setState({ compressedText: compressedInput, copied: false });
@@ -68,9 +68,9 @@ class Main extends Component {
         var bitString = '';
 
         for(let ch of this.state.decompressionText){
-            let code = (ch.charCodeAt()-58); //decoded as decimal from character 
+            let code = (ch.charCodeAt()-33); //decoded as decimal from character 
             let bits = (code).toString(2);  //converted to bits -> a=1,b=10,c=11...
-            let fiveDigitBits = ("0000000" + bits).substr(-6); // coverted to six digit bits -> a=000001,b=000010...
+            let fiveDigitBits = ("00000000000" + bits).substr(-10); // coverted to six digit bits -> a=000001,b=000010...
             bitString += fiveDigitBits; // combined into single string
         }
         
