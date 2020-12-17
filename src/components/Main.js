@@ -39,6 +39,7 @@ class Main extends Component {
             alert("Invalid input!");
             return;
         } 
+        var codes = ['0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'];
         var compressedInput = '';
         var bitString = '';
         for(let ch of this.state.compressionText){
@@ -48,16 +49,16 @@ class Main extends Component {
             bitString += fiveDigitBits; // combined into single string
         }
 
-        var n = 10; // number of bits used to create a single character of compressed string
+        var n = 6; // number of bits used to create a single character of compressed string
         for(let ch=0;ch<bitString.length;ch+=n){
             let nDigitBits = bitString.substr(ch,n); // n bit characters
             if(nDigitBits.length!==n){
                 // when ndigitbits is less than number of bits required, for example to convert 011 to 011000 (when n=6)
                 let temp = parseInt(nDigitBits,2)<<n-nDigitBits.length;
-                nDigitBits = ("00000000000" + temp.toString(2)).substr(-10);
+                nDigitBits = ("0000000" + temp.toString(2)).substr(-6);
             }
             let code = parseInt(nDigitBits,2); // binary to decimal
-            let char = String.fromCharCode((code+33).toString(10)); // decimal+58 to char to avoid invalid characters
+            let char = codes[code];
             compressedInput += char; 
         }
         this.setState({ compressedText: compressedInput, copied: false });
@@ -67,11 +68,16 @@ class Main extends Component {
         var decompressedOutput = '';
         var bitString = '';
 
+        var codes = ['0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'];
+        var dcodes={};
+        for(let i=0;i<=codes.length;i++){
+            dcodes[codes[i]] = i;
+        }
         for(let ch of this.state.decompressionText){
-            let code = (ch.charCodeAt()-33); //decoded as decimal from character 
+            let code = dcodes[ch]; //decoded as decimal from character 
             let bits = (code).toString(2);  //converted to bits -> a=1,b=10,c=11...
-            let fiveDigitBits = ("00000000000" + bits).substr(-10); // coverted to six digit bits -> a=000001,b=000010...
-            bitString += fiveDigitBits; // combined into single string
+            let sixDigitBits = ("0000000" + bits).substr(-6); // coverted to six digit bits -> a=000001,b=000010...
+            bitString += sixDigitBits; // combined into single string
         }
         
         var n = 5; // number of bits used to create a single character of decompressed string
